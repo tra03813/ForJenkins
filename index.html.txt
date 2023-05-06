@@ -4,6 +4,6 @@
     <title>Моя тестовая страница Git</title>
   </head>
   <body>
-    <img src="https://dcblog.b-cdn.net/wp-content/uploads/2021/02/Full-form-of-URL-1-1024x824.jpg" alt="Моё тестовое изображение">
+    <img src="https://dcblog.b-cdn.net/wp-content/uploads/2021/02/Full-form-of-URL-1-1024x824.jpg" alt="Моё тестовое изображение22">
   </body>
 </html>
