@@ -1,23 +1,19 @@
-# syntax=docker/dockerfile:1
+FROM ubuntu:18.04
 
-FROM eclipse-temurin:17-jdk-jammy as base
-WORKDIR /app
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
-COPY src ./src
+# Install dependencies
+RUN apt-get update && \
+ apt-get -y install apache2
 
-FROM base as test
-CMD ["./mvnw", "test"]
+# Install apache and write hello world message
+RUN echo 'Hello World!' > /var/www/html/index.html
 
-FROM base as development
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=mysql", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000'"]
+# Configure apache
+RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh && \
+ echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh && \
+ echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh && \ 
+ echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh && \ 
+ chmod 755 /root/run_apache.sh
 
-FROM base as build
-RUN ./mvnw package
+EXPOSE 80
 
-
-FROM eclipse-temurin:17-jre-jammy as production
-EXPOSE 8080
-COPY --from=build /app/target/spring-petclinic-*.jar /spring-petclinic.jar
-CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/spring-petclinic.jar"]
+CMD /root/run_apache.sh
